@@ -1,28 +1,36 @@
-const puppeteer = require("puppeteer");
+import puppeteer from 'puppeteer';
+import DOMPurify from 'isomorphic-dompurify';
 
 const PAGE_URL =
-  "https://www.hansimmo.be/appartement-te-koop-in-borgerhout/10161";
+    "https://www.hansimmo.be/appartement-te-koop-in-borgerhout/10321";
 
-const main = async () => {
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
 
-  await page.goto(PAGE_URL);
+const main = async() => {
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
 
-  const items = await page.evaluate(() => {
-    // write your querySelectors here
+    await page.goto(PAGE_URL);
 
-    return {
-      description: "",
-      title: "",
-      price: "",
-      address: "",
-    };
-  });
+    const items = await page.evaluate(() => {
+        const description = document.querySelector('meta[property="og:description"]').getAttribute('content');
+        const title = document.querySelector('title').textContent;
+        const price = document.querySelector('.price').textContent;
+        const address = document.querySelector('.address').textContent;
 
-  console.log(items);
+        return {
+            description: description,
+            title: title,
+            price: price,
+            address: address,
+        };
+    });
 
-  return items;
+    const sanitizedDescription = DOMPurify.sanitize(items.description);
+    items.description = sanitizedDescription;
+
+    console.log(items);
+
+    return items;
 };
 
-main().then((data) => console.log(data));
+main().then((items) => console.log(items));
