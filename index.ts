@@ -1,5 +1,5 @@
-import puppeteer from 'puppeteer';
-import DOMPurify from 'isomorphic-dompurify';
+const puppeteer = require('puppeteer');
+const DOMPurify = require('isomorphic-dompurify');
 
 const PAGE_URL =
     "https://www.hansimmo.be/appartement-te-koop-in-borgerhout/10321";
